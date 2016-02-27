@@ -10,8 +10,7 @@ Using Amazon Alexa to text you to-do list reminders at scheduled times & dates
   - If you cannot complete the task at that moment, simply respond with "postpone until (specified date & time / amount of time)" and she will send you a reminder text at the new time
 
 Technologies Used:
-• [Amazon Alexa](https://alexa.amazon.com)
-• [Firebase](https://www.firebase.com)
-• [Twilio](https://www.twilio.com)
-• [Node.js](https://www.nodejs.org)
-  
+- [Amazon Alexa](https://alexa.amazon.com)
+- [Firebase](https://www.firebase.com)
+- [Twilio](https://www.twilio.com)
+- [Node.js](https://www.nodejs.org)

@@ -1,0 +1,31 @@
+{
+  "name": "TextList",
+  "description": "An Amazon Alexa skill for sending scheduled to-do list text messages using Firebase and Twilio",
+  "author": "Christian Guerin <christian@setmine.com> (http://christianjguerin.com)",
+  "contributors": "James Risberg <james.risberg@gmail.com (http://jamesrisberg.xyz)>"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gueroso/TextList.git"
+  },
+  "dependencies": {
+    "express": "4.8.x",
+    "body-parser": "1.8.x",
+    "cron": "1.0.x",
+    "twilio": "1.2.x",
+    "firebase": "1.0.x",
+    "alexa-skill": "0.1.1"
+  },
+  "keywords": [
+    "amazon",
+    "alexa",
+    "skills",
+    "firebase",
+    "twilio",
+    "cron",
+    "scheduling",
+    "sms"
+  ],
+  "engines": {
+    "node": ">= 0.8"
+  }
+}
