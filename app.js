@@ -39,9 +39,9 @@ app.post('/message', function (req, res) {
     if(numbers.indexOf(fromNum) !== -1){
       resp.message('you have already completed this task');
     } else {
-      resp.message('thanks for taking the time to complete your task. I will stop reminding you about this task.')
+      resp.message('thanks for taking the time to complete your task. I will stop reminding you about this task.');
     } else {
-      resp.message('Welcome! It looks like your to-do list is currently empty. Please communicate with me (Alexa) through your Amazon Echo to schedule new text message reminders!')
+      resp.message('Welcome! It looks like your to-do list is currently empty. Please communicate with me (Alexa) through your Amazon Echo to schedule new text message reminders!');
     }
     res.writeHead(200, {
       'Content-Type':'text/xml'
