@@ -20,6 +20,7 @@ var userPhone = "+17065806048";
 var client = require('twilio')(accountSid, authToken);
 
 var sendMessage = function (message) {
+    console.log("Sending message");
     twilioClient.messages.create({
         to: "+17065806048",
         from: "+19543712870",
@@ -28,12 +29,6 @@ var sendMessage = function (message) {
         console.log(message.sid);
     });
 };
-
-var cronGuy = new CronJob('* * * * *', function () {
-    for (var i = 0; i < reminders.length; i++) {
-        sendMessage(reminders[i].task);
-    }
-}, null, true);
 
 var App = React.createClass({
     getInitialState() {
@@ -97,6 +92,14 @@ var App = React.createClass({
     },
     componentWillMount: function() {
         this.bindAsArray(textListRef, "reminders");
+        
+        var cronGuy = new CronJob('* * * * *', function () {
+            for (var i = 0; i < reminders.length; i++) {
+                if (reminders[i].date <= Date.now()) {
+                    sendMessage(reminders[i].task);
+                }
+            }
+        }, null, true);
     },
     render() {
         return (

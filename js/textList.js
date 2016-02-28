@@ -31,5 +31,4 @@ var textListComponent = React.createClass({
     }
 });
 
-
 module.exports = textList;
