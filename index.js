@@ -107,6 +107,7 @@ function remindUser(intent, session, callback) {
     var reminder = intent.slots.Reminder.value;
     var time = intent.slots.Time.value;
     var date = intent.slots.Date.value;
+    var repeatDay = intent.slots.RepeatDay.value;
     var repromptText = "";
     var sessionAttributes = {};
     var shouldEndSession = false;
@@ -114,21 +115,25 @@ function remindUser(intent, session, callback) {
 
     console.log("After var declarations");
     sessionAttributes = createReminderAttributes(time, date);
+
+    if (repeatDay && reminder) {
+        speechOutput = "You will be reminded to " + reminder + " every " + repeatDay;
+        addRecurringReminderToFirebase(reminder, repeatDay, function() {
+            repromptText = "Ask to be texted at a time and date.";
     
-    if (reminder && time && date) {
-        console.log("Inside if statement");
+            callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+        });
+    } else if (reminder && time && date) {
         speechOutput = "You will be reminded to " + reminder + " at " + time + " on " + date;
-        addReminderToFirebase(reminder, time, date);
-
-        console.log("After add reminder");
-
-
+        addReminderToFirebase(reminder, time, date, function() {
+            repromptText = "Ask to be texted at a time and date.";
+    
+            callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+        });
     } else {
         speechOutput = "You must specify a reminder, time, and date.";
+        callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
     }
-    repromptText = "Ask to be texted at a time and date.";
-    
-    callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
 }
 
 function createReminderAttributes(time, date) {
@@ -138,22 +143,45 @@ function createReminderAttributes(time, date) {
     };
 }
 
-function addReminderToFirebase(reminder, time, date) {
-    console.log("Inside addReminders");
+function addReminderToFirebase(reminder, time, date, callback) {
     var ref = new Firebase("https://textlist.firebaseio.com/");
-    console.log("created Firebase Reference");
-    
-    console.log("Reminder = " + reminder + " Time = " + time + " Date = " + date);
-    var pushRef = ref.push()
-    
+    var pushRef = ref.push();
+
     pushRef.set({
         task: reminder,
         time: time,
-        date: date
+        date: date,
+        repeatDay: ""
+    }, function(err) { 
+        if (err) {
+            console.log("Firebase error: " + err);
+        } else {
+            console.log("Done!");
+            callback();
+        }
     });
-
-    console.log("after push");
 }
+
+function addRecurringReminderToFirebase(reminder, repeatDay, callback) {
+    var ref = new Firebase("https://textlist.firebaseio.com/");
+    var pushRef = ref.push();
+
+    pushRef.set({
+        task: reminder,
+        time: "",
+        date: "",
+        repeatDay: repeatDay
+    }, function(err) { 
+        if (err) {
+            console.log("Firebase error: " + err);
+        } else {
+            console.log("Done!");
+            callback();
+        }
+    });
+}
+
+
 
 // --------------- Helpers that build all of the responses -----------------------
 
