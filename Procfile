@@ -1,0 +1,1 @@
+web: nmp run build
