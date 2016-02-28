@@ -8,19 +8,25 @@
     "url": "git://github.com/gueroso/TextList.git"
   },
   "dependencies": {
-    "express": "4.8.x",
-    "body-parser": "1.8.x",
-    "cron": "1.0.x",
-    "twilio": "1.2.x",
-    "firebase": "2.x.x",
     "alexa-skill": "0.1.1",
+    "babel-loader": "^6.2.4",
+    "babel-plugin-react-transform": "^2.0.0",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-runtime": "^6.5.0",
+    "body-parser": "1.8.x",
+    "browserify": "13.0.0",
+    "cron": "1.0.x",
+    "express": "4.8.x",
+    "firebase": "2.x.x",
     "promise": "6.1.0",
-    "react":"0.14.7",
-    "browserify":"13.0.0",
-    "reactify":"1.1.1",
-    "watchify":"3.7.0",
-    "uglify-js":"2.6.2",
-    "reactfire":"0.6.0"
+    "react": "0.14.7",
+    "reactfire": "0.6.0",
+    "reactify": "1.1.1",
+    "twilio": "1.2.x",
+    "uglify-js": "2.6.2",
+    "watchify": "3.7.0"
   },
   "keywords": [
     "amazon",
@@ -34,5 +40,19 @@
   ],
   "engines": {
     "node": ">= 0.8"
+  },
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-core": "^6.5.2",
+    "babel-loader": "^6.2.4",
+    "react-hot-loader": "^1.3.0",
+    "react-router": "^2.0.0",
+    "webpack": "^1.12.14",
+    "webpack-dev-middleware": "^1.5.1",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "scripts": {
+    "start": "webpack-dev-server --hot --progress --colors",
+    "build": "webpack --progress --colors"
   }
 }
