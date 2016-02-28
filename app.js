@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactFireMixin = require('reactfire');
 
 var alexaButton = require('./alexaButton');
 var textList = require('./textList');
@@ -25,8 +26,8 @@ var client = require('twilio')(accountSid, authToken);
 client.messages.create({
     to: "+17065806048",
     from: "+19543712870",
-    body: "Hey James! Good luck winning the Amazon Alexa Hack!",
-    mediaUrl: "http://www.motherjones.com/files/bernie_2.jpg",
+    body: "Time to kick it into overdrive.",
+    mediaUrl: "http://www.foodinnovationsolutions.com/wp-content/uploads/2014/09/Rocket2.jpg",
 }, function(err, message) {
     console.log(message.sid);
 });
@@ -34,10 +35,34 @@ client.messages.create({
 var Firebase = require('firebase'),
   textList = new Firebase('{textlist.firebaseIO.com}/textlist/');
 
-  var YOURPHONE = "+17065806048"
-  var YOURFRIENDSPHONENUMBER = "+19545585152"
-  var numbers = [YOURPHONE,YOURFRIENDSPHONENUMBER];
+  // var YOURPHONE = "+17065806048"
+  // var YOURFRIENDSPHONENUMBER = "+19545585152"
+  // var TEAM = [YOURPHONE,YOURFRIENDSPHONENUMBER];
 
+  //
+  // var textListComponent = React.createClass({
+  //   mixins: [ReactFireMixin],
+  //
+  // getInitialState: function() {
+  //     return {
+  //       textlist: []
+  //     };
+  //   },
+  //   componentWillMount: function() {
+  //     var ref = new Firebase("https://textlist.firebaseio.com/textlist");
+  //     this.bindAsArray(ref, "textlist");
+  //   },
+  //   render: function() {
+  //     var textlist = this.state.textlist.map(function(textlist) {
+  //   return (
+  //     <li key={ textlist['.key'] }>
+  //       <b>{ textlist.uid }</b> says { textlist.task }
+  //     </li>
+  //   );
+  // });
+  // return <ul>{ textlist }</ul>;
+  //   }
+  // });
 
 // var todos = [];
 // usersRef.on('child_added', function(snapshot) {

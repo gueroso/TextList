@@ -5,27 +5,41 @@
 //
 // var textItem = React.createClass({
 //
-// 	handleClick(){
-// 		this.props.onClick(this.props.address);
-// 	},
+//   var TextList = React.createClass({
+//     mixins: [ReactFireMixin],
 //
-// 	render(){
+//     getInitialState: function() {
+//       return {
+//         textlist: [],
+//         task: ''
+//       };
+//     },
 //
-// 		var cn = "list-group-item";
+//     componentWillMount: function() {
+//       var firebaseRef = new Firebase('https://textlist.firebaseio.com/textlist/');
+//       this.bindAsArray(firebaseRef.limitToLast(25), 'textlist');
+//     },
 //
-// 		if(this.props.active){
-// 			cn += " active-location";
-// 		}
+//     onChange: function(e) {
+//       this.setState({task: e.target.value});
+//     },
 //
-// 		return (
-// 			<a className={cn} onClick={this.handleClick}>
-// 				{this.props.todos}
-// 				<span className="createdAt">{ moment(this.props.timestamp).fromNow() }</span>
-// 			</a>
-// 		)
+//     removeItem: function(key) {
+//       var firebaseRef = new Firebase('https://textlist.firebaseio.com/textlist/');
+//       firebaseRef.child(key).remove();
+//     },
 //
-// 	}
 //
+//     render: function() {
+//       return (
+//         <div>
+//           <TextListTask className="textListComponent" tasks={ this.state.tasks } removeItem={ this.removeItem } />
+//           <span className="createdAt">{ moment(this.props.timestamp).fromNow() }</span>
+//         </div>
+//       );
+//     }
+//   });
+// }
 // });
 //
 // module.exports = textItem;
