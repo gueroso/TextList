@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "alexa-skill": "0.1.1",
+    "babel": "^6.0.15",
+    "babel-core": "^6.3.26",
     "babel-loader": "^6.2.4",
     "babel-plugin-react-transform": "^2.0.0",
     "babel-preset-es2015": "^6.5.0",
@@ -22,6 +24,9 @@
     "firebase": "2.x.x",
     "promise": "6.1.0",
     "react": "0.14.7",
+    "react-transform": "0.0.3",
+    "react-dom": "0.14.7",
+    "react-tools": "0.10.0",
     "reactfire": "0.6.0",
     "reactify": "1.1.1",
     "twilio": "1.2.x",

@@ -1,5 +1,6 @@
 var React = require('react');
 var ReactFireMixin = require('reactfire');
+var ReactDOM = require('react-dom');
 
 var alexaButton = require('./components/alexaButton');
 var textList = require('./components/textList');
@@ -105,7 +106,7 @@ var App = React.createClass({
                     <h1> Your recurring Text Messages </h1>
                     <textList listToDisplay={this.state.recurring}/>
                 </div>
-        );  
+        );
     };
 });
 
