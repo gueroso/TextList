@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TextList: Using Amazon Alexa to send you text message reminders at scheduled dates and times.</title>
+
+    <!-- React -->
+    <script src="https://fb.me/react-0.14.7.min.js"></script>
+    <script src="https://fb.me/react-dom-0.14.7.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://cdn.firebase.com/js/client/2.4.0/firebase.js"></script>
+
+    <!-- ReactFire -->
+    <script src="https://cdn.firebase.com/libs/reactfire/0.6.0/reactfire.min.js"></script>
+
+    <!-- throw-in-the-towel -->
+    <script src="https://npmcdn.com/throw-in-the-towel@2"></script>
+
+    <!-- Custom JS -->
+    <script type="text/babel" src="js/todoAppOriginal.js"></script>
+    <script type="text/babel" src="js/todoAppFirebaseExplicit.js"></script>
+    <script type="text/babel" src="js/todoAppFirebaseImplicit.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+  </head>
+
+  <body>
+    <div id="mainContainer">
+    <h1>TextList</h1>
+    <h3>Ask Amazon Alexa to send you text message reminders exactly when you need to see them.</h2>
+
+        <div class="alexaButtonContainer">
+            <h2>Alexa makes for a fantastic personal assistant</h2>
+            <div id="alexa-button"></div>
+        </div>
+
+        <div class="soonestTaskContainer">
+            <h2>Soonest Task</h2>
+            <div id="soonest-task"></div>
+
+        </div>
+
+        <div class="textListContainer">
+            <h2>Upcoming and Recurring Tasks</h2>
+            <div id="upcoming-tasks"></div>
+        </div>
+        <div style="clear: both; margin-bottom: 10px;"></div>
+    </div>
+  </body>
+</html>
