@@ -11,7 +11,7 @@ exports.handler = function (event, context) {
          * prevent someone else from configuring a skill that sends requests to this function.
          */
         if (event.session.application.applicationId !== "amzn1.echo-sdk-ams.app.87de1949-e52a-4bea-ad04-cdefa50d9ff5") {
-             context.fail("Invalid Application ID");
+            context.fail("Invalid Application ID");
         }
 
         if (event.session.new) {
@@ -88,13 +88,9 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 function getWelcomeResponse(callback) {
     // If we wanted to initialize the session to have some attributes we could add those here.
-    var sessionAttributes = {};
-    var cardTitle = "Welcome";
-    var speechOutput = "Welcome to Text list. " + "What would you like to be reminded of?";
-    // If the user either does not reply to the welcome message or says something that is not
-    // understood, they will be prompted again with this text.
-    var repromptText = "Please ask for a reminder.";
-    var shouldEndSession = false;
+    var sessionAttributes = {}, cardTitle = "Welcome",
+        speechOutput = "Welcome to Text list. " + "What would you like to be reminded of?",
+        repromptText = "Please ask for a reminder.", shouldEndSession = false;
 
     callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
 }
@@ -108,70 +104,94 @@ function remindUser(intent, session, callback) {
     var time = intent.slots.Time.value;
     var date = intent.slots.Date.value;
     var repeatDay = intent.slots.RepeatDay.value;
-    var repromptText = "";
-    var sessionAttributes = {};
-    var shouldEndSession = false;
-    var speechOutput = "";
+    
+    var duration = intent.slots.Duration.value, repromptText = "", sessionAttributes = {},
+        shouldEndSession = false, speechOutput = "";
 
-    console.log("After var declarations");
-    sessionAttributes = createReminderAttributes(time, date);
+    sessionAttributes = createReminderAttributes(reminder, time, date, repeatDay);
 
-    if (repeatDay && reminder) {
-        speechOutput = "You will be reminded to " + reminder + " every " + repeatDay;
-        addRecurringReminderToFirebase(reminder, repeatDay, function() {
-            repromptText = "Ask to be texted at a time and date.";
+    if (reminder && repeatDay) {
+        console.log("recurring");
+        date = "";
+        time = "12:00";
+        speechOutput = "You will be reminded to " + reminder + " every " + repeatDay + ". Ask again or say Alexa, quit.";
+        addReminderToFirebase(reminder, time, repeatDay, function () {
+            repromptText = "Ask to be texted or say Alexa, quit.";
     
             callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+        });
+    } else if (reminder && duration) {
+        console.log("duration");
+        repeatDay = "";
+        
+        var delayedDate = 0;
+        convertDurationToDateFromNow(duration, function(delayed) {
+            delayedDate = delayed;
+            
+            var d = new Date(delayedDate);
+            speechOutput = "You will be reminded to " + reminder + " on " + d.toDateString() + " at " + d.toTimeString() + ". Ask again or say quit.";
+        
+            addReminderToFirebase(reminder, d.toTimeString(), delayedDate, repeatDay, function() {
+                repromptText = "Ask to be texted or say Alexa, quit.";
+        
+                callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+            });
         });
     } else if (reminder && time && date) {
-        speechOutput = "You will be reminded to " + reminder + " at " + time + " on " + date;
-        addReminderToFirebase(reminder, time, date, function() {
-            repromptText = "Ask to be texted at a time and date.";
+        console.log("normal");
+        repeatDay = "";
+        speechOutput = "You will be reminded to " + reminder + " at " + time + " on " + date + ". Ask again or say quit.";
+        
+        var delayedDate = Date.parse(date + " " + time);
+        addReminderToFirebase(reminder, time, delayedDate, repeatDay, function () {
+            repromptText = "Ask to be texted or say Alexa, quit.";
     
             callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
         });
+    } else if (reminder && time) {
+        console.log("time");
+        repeatDay = "";
+        var today = new Date();
+
+        var timeNow = today.toTimeString();
+
+        if (Date.parse('01/01/2011 ' + time) > Date.parse('01/01/2011 ' + timeNow)) {
+            speechOutput = "You must specify a time in the future.";
+            callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+        } else {
+            speechOutput = "You will be reminded to " + reminder + " at " + time;
+
+            delayedDate = Date.parse(today.toDateString() + " " + time);
+            addReminderToFirebase(reminder, time, delayedDate, repeatDay, function () {
+                repromptText = "Ask to be texted or say Alexa, quit.";
+    
+                callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
+            });
+        }
     } else {
-        speechOutput = "You must specify a reminder, time, and date.";
+        speechOutput = "You must specify a reminder, with time, time and date, or time delay.";
         callback(sessionAttributes, buildSpeechletResponse(cardTitle, speechOutput, repromptText, shouldEndSession));
     }
 }
 
-function createReminderAttributes(time, date) {
+function createReminderAttributes(task, time, date, repeatDay) {
     return {
+        task: task,
         time: time,
-        date: date
+        date: date,
+        repeatDay: repeatDay
     };
 }
 
-function addReminderToFirebase(reminder, time, date, callback) {
-    var ref = new Firebase("https://textlist.firebaseio.com/");
-    var pushRef = ref.push();
+function addReminderToFirebase(reminder, time, date, repeatDay, callback) {
+    var ref = new Firebase("https://textlist.firebaseio.com/"), pushRef = ref.push();
 
     pushRef.set({
         task: reminder,
         time: time,
         date: date,
-        repeatDay: ""
-    }, function(err) { 
-        if (err) {
-            console.log("Firebase error: " + err);
-        } else {
-            console.log("Done!");
-            callback();
-        }
-    });
-}
-
-function addRecurringReminderToFirebase(reminder, repeatDay, callback) {
-    var ref = new Firebase("https://textlist.firebaseio.com/");
-    var pushRef = ref.push();
-
-    pushRef.set({
-        task: reminder,
-        time: "",
-        date: "",
         repeatDay: repeatDay
-    }, function(err) { 
+    }, function (err) {
         if (err) {
             console.log("Firebase error: " + err);
         } else {
@@ -181,7 +201,54 @@ function addRecurringReminderToFirebase(reminder, repeatDay, callback) {
     });
 }
 
+function convertDurationToDateFromNow(duration, callback) {
+    duration.replace("P", "");
+    duration.replace("T", "");
 
+    var delayInMSeconds = 0;
+    console.log("Duration" + duration);
+
+    for (var i = 0; i < duration.length; ++i) {
+        if (duration.charAt(i) == "Y") {
+            delayInMSeconds += (parseInt(duration.charAt(i-1))) * 31557600000;
+            console.log("Delay: " + delayInMSeconds);
+        }
+        if (duration.charAt(i) == "M") {
+            delayInMSeconds += (parseInt(duration.charAt(i-1))) * 2592000000;
+            console.log("Delay: " + delayInMSeconds);
+        }
+        if (duration.charAt(i) == "W") {
+            delayInMSeconds += (parseInt(duration.charAt(i-1))) * 604800000;
+            console.log("Delay: " + delayInMSeconds);
+        }
+        if (duration.charAt(i) == "D") {
+            delayInMSeconds += (parseInt(duration.charAt(i-1))) * 86400000;
+            console.log("Delay: " + delayInMSeconds);
+        }
+        if (duration.charAt(i) == "H") {
+            delayInMSeconds += (parseInt(duration.charAt(i-1))) * 3600000;
+            console.log("Delay: " + delayInMSeconds);
+        }
+        if (duration.charAt(i) == "M") {
+            delayInMSeconds += (parseInt(duration.charAt(i-1))) * 60000;
+            console.log("Delay: " + delayInMSeconds);
+        }
+        if (duration.charAt(i) == "S") {
+            delayInMSeconds += (parseInt(duration.charAt(i-1))) * 1000;
+            console.log("Delay: " + delayInMSeconds);
+        }
+    }
+    
+    var now = new Date();
+    console.log("new Date: " + now);
+    var delayedDate = now.getTime() + delayInMSeconds;
+    
+    console.log("offsetDate: " + delayedDate);
+    
+    callback(delayedDate);
+}
+
+function z(n){return (n < 10? '0' : '') + n;}
 
 // --------------- Helpers that build all of the responses -----------------------
 
